@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option go_package = "/benchmark";
+
+message EnumMessage {
+  string Message = 1;
+  enum EmbeddedEnum {
+    UNIVERSAL = 0;
+    WEB = 1;
+    IMAGES = 2;
+    LOCAL = 3;
+    NEWS = 4;
+    PRODUCTS = 5;
+    VIDEO = 6;
+  }
+  EmbeddedEnum Embedded = 4;
+}
+
+message EmbeddedMessage {
+  bytes EmbeddedData = 1;
+}
+
+message Map {
+  map<string, double> BuiltMap = 1;
+}
+
+message Benchmark {
+  string Message = 1;
+  EmbeddedMessage Embedded = 2;
+  Map EmbeddedMap = 3;
+  EnumMessage EnumMessage = 4;
+  repeated EmbeddedMessage Repeated = 5;
+}
