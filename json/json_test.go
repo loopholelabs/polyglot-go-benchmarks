@@ -14,35 +14,40 @@
 	limitations under the License.
 */
 
-package polyglot
+package json
 
 import (
-	"github.com/loopholelabs/polyglot-go"
-	"github.com/loopholelabs/polyglot-go-benchmarks"
+	"encoding/json"
+	benchmarks "github.com/loopholelabs/polyglot-go-benchmarks"
 	"testing"
 )
 
 func BenchmarkEncode(b *testing.B) {
 	b.ReportAllocs()
-	val := benchmarks.GeneratePolyglot()
+	val := benchmarks.Generate()
+	var buf []byte
+	var err error
 	for i := 0; i < b.N; i++ {
 		for j := 0; j < benchmarks.TestSize; j++ {
-			buf := polyglot.GetBuffer()
-			val.Encode(buf)
-			polyglot.PutBuffer(buf)
+			buf, err = json.Marshal(val)
+			if err != nil {
+				b.Error(err)
+			}
+			buf = buf[:0]
 		}
 	}
 }
 
 func BenchmarkDecode(b *testing.B) {
 	b.ReportAllocs()
-	val := benchmarks.GeneratePolyglot()
-	buf := polyglot.GetBuffer()
-	val.Encode(buf)
-	var err error
+	val := benchmarks.Generate()
+	buf, err := json.Marshal(val)
+	if err != nil {
+		b.Error(err)
+	}
 	for i := 0; i < b.N; i++ {
 		for j := 0; j < benchmarks.TestSize; j++ {
-			err = val.Decode(*buf)
+			err = json.Unmarshal(buf, val)
 			if err != nil {
 				b.Error(err)
 			}
@@ -50,21 +55,23 @@ func BenchmarkDecode(b *testing.B) {
 	}
 }
 
-func BenchmarkDecodeWithValidate(b *testing.B) {
+func BenchmarkDecodeValidate(b *testing.B) {
 	b.ReportAllocs()
-	val := benchmarks.GeneratePolyglot()
-	buf := polyglot.GetBuffer()
-	val.Encode(buf)
-	var err error
+	val := benchmarks.Generate()
+	buf, err := json.Marshal(val)
+	if err != nil {
+		b.Error(err)
+	}
 	for i := 0; i < b.N; i++ {
 		for j := 0; j < benchmarks.TestSize; j++ {
-			err = val.Decode(*buf)
+			err = json.Unmarshal(buf, val)
 			if err != nil {
 				b.Error(err)
 			}
-			if !benchmarks.ValidatePolyglot(val) {
-				b.Error("Validation failed")
-			}
+		}
+
+		if !benchmarks.Validate(val) {
+			b.Error("Validation failed")
 		}
 	}
 }

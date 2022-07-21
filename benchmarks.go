@@ -13,6 +13,7 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
 */
+
 package benchmarks
 
 import (
@@ -73,6 +74,30 @@ func GenerateProtobuf() *protobuf.Benchmark {
 	}
 	for i := 0; i < 10; i++ {
 		b.Repeated = append(b.Repeated, &protobuf.EmbeddedMessage{EmbeddedData: []byte(fmt.Sprintf(RepeatedFormat, i))})
+	}
+
+	return b
+}
+
+func Generate() *Benchmark {
+	b := &Benchmark{
+		Message: Message,
+		Embedded: &EmbeddedMessage{
+			EmbeddedData: ByteMessage,
+		},
+		EmbeddedMap: &Map{
+			BuiltMap: map[string]float64{
+				MapKey0: MapValue0,
+				MapKey1: MapValue1,
+			},
+		},
+		EnumMessage: &EnumMessage{
+			Message:  ENUMMessage,
+			Embedded: EnumMessageUNIVERSAL,
+		},
+	}
+	for i := 0; i < 10; i++ {
+		b.Repeated = append(b.Repeated, &EmbeddedMessage{EmbeddedData: []byte(fmt.Sprintf(RepeatedFormat, i))})
 	}
 
 	return b
@@ -140,6 +165,40 @@ func ValidateProtobuf(b *protobuf.Benchmark) bool {
 	}
 
 	if b.EnumMessage.Embedded != protobuf.EnumMessage_UNIVERSAL {
+		return false
+	}
+
+	return true
+}
+
+func Validate(b *Benchmark) bool {
+	if b.Message != Message {
+		return false
+	}
+
+	if !bytes.Equal(b.Embedded.EmbeddedData, ByteMessage) {
+		return false
+	}
+
+	if b.EmbeddedMap.BuiltMap[MapKey0] != MapValue0 {
+		return false
+	}
+
+	if b.EmbeddedMap.BuiltMap[MapKey1] != MapValue1 {
+		return false
+	}
+
+	for i := 0; i < 10; i++ {
+		if !bytes.Equal(b.Repeated[i].EmbeddedData, []byte(fmt.Sprintf(RepeatedFormat, i))) {
+			return false
+		}
+	}
+
+	if b.EnumMessage.Message != ENUMMessage {
+		return false
+	}
+
+	if b.EnumMessage.Embedded != EnumMessageUNIVERSAL {
 		return false
 	}
 
