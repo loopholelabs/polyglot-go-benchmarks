@@ -5,9 +5,9 @@ This repository contains a series of benchmarks for the Go implementation of Pol
 ## Polyglot Benchmark
 
 This benchmark is designed to be as close to a 1:1 comparison with protobuf and other serialization/deserialization frameworks as possible.
-In order to facilitate this, all the generated code makes use of the same `benchmark.proto` file. 
+In order to facilitate this, all the generated code makes use of the same `benchmark.proto` file.
 
-We've also kept the benchmarking code as similar as possible. 
+We've also kept the benchmarking code as similar as possible.
 
 ### Running the Benchmarks
 
@@ -17,9 +17,10 @@ Running the benchmarks is as simple as using the built-in `go test` command as f
 $ go test ./... -bench=. -v
 ```
 
-This will run the entire benchmark suite and for each serialization framework and return the average amount of time it takes to serialize or deserialize **1024** messages in a row. 
+This will run the entire benchmark suite and for each serialization framework and return the average amount of time it takes to serialize or deserialize **1024** messages in a row.
 
 This means that for the following example protobuf benchmark:
+
 ```shell
 pkg: github.com/loopholelabs/polyglot-go-benchmarks/protobuf
 BenchmarkEncode
@@ -34,6 +35,7 @@ The `BenchmarkEncode` test took `905053 ns` for **1024 messages** - meaning it t
 `1630963 ns / 1024 = 1592.73730469 ns` per message to decode in the `BenchmarkDecode` test.
 
 Here's the same benchmarks but for Polyglot
+
 ```shell
 pkg: github.com/loopholelabs/polyglot-go-benchmarks/polyglot
 BenchmarkEncode
