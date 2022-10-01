@@ -21,6 +21,7 @@ import (
 	"fmt"
 	polyglot "github.com/loopholelabs/polyglot-go-benchmarks/polyglot/benchmark"
 	protobuf "github.com/loopholelabs/polyglot-go-benchmarks/protobuf/benchmark"
+	vtprotobuf "github.com/loopholelabs/polyglot-go-benchmarks/vtprotobuf/vtbenchmark"
 )
 
 const (
@@ -74,6 +75,30 @@ func GenerateProtobuf() *protobuf.Benchmark {
 	}
 	for i := 0; i < 10; i++ {
 		b.Repeated = append(b.Repeated, &protobuf.EmbeddedMessage{EmbeddedData: []byte(fmt.Sprintf(RepeatedFormat, i))})
+	}
+
+	return b
+}
+
+func GenerateVTProtobuf() *vtprotobuf.VTBenchmark {
+	b := &vtprotobuf.VTBenchmark{
+		Message: Message,
+		Embedded: &vtprotobuf.VTEmbeddedMessage{
+			VTEmbeddedData: ByteMessage,
+		},
+		EmbeddedMap: &vtprotobuf.VTMap{
+			BuiltMap: map[string]float64{
+				MapKey0: MapValue0,
+				MapKey1: MapValue1,
+			},
+		},
+		EnumMessage: &vtprotobuf.VTEnumMessage{
+			Message:  ENUMMessage,
+			Embedded: vtprotobuf.VTEnumMessage_UNIVERSAL,
+		},
+	}
+	for i := 0; i < 10; i++ {
+		b.Repeated = append(b.Repeated, &vtprotobuf.VTEmbeddedMessage{VTEmbeddedData: []byte(fmt.Sprintf(RepeatedFormat, i))})
 	}
 
 	return b
@@ -165,6 +190,40 @@ func ValidateProtobuf(b *protobuf.Benchmark) bool {
 	}
 
 	if b.EnumMessage.Embedded != protobuf.EnumMessage_UNIVERSAL {
+		return false
+	}
+
+	return true
+}
+
+func ValidateVTProtobuf(b *vtprotobuf.VTBenchmark) bool {
+	if b.Message != Message {
+		return false
+	}
+
+	if !bytes.Equal(b.Embedded.VTEmbeddedData, ByteMessage) {
+		return false
+	}
+
+	if b.EmbeddedMap.BuiltMap[MapKey0] != MapValue0 {
+		return false
+	}
+
+	if b.EmbeddedMap.BuiltMap[MapKey1] != MapValue1 {
+		return false
+	}
+
+	for i := 0; i < 10; i++ {
+		if !bytes.Equal(b.Repeated[i].VTEmbeddedData, []byte(fmt.Sprintf(RepeatedFormat, i))) {
+			return false
+		}
+	}
+
+	if b.EnumMessage.Message != ENUMMessage {
+		return false
+	}
+
+	if b.EnumMessage.Embedded != vtprotobuf.VTEnumMessage_UNIVERSAL {
 		return false
 	}
 

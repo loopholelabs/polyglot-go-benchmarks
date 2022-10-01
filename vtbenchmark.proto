@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option go_package = "/vtbenchmark";
+
+message VTEnumMessage {
+  string Message = 1;
+  enum VTEmbeddedEnum {
+    UNIVERSAL = 0;
+    WEB = 1;
+    IMAGES = 2;
+    LOCAL = 3;
+    NEWS = 4;
+    PRODUCTS = 5;
+    VIDEO = 6;
+  }
+  VTEmbeddedEnum Embedded = 4;
+}
+
+message VTEmbeddedMessage {
+  bytes VTEmbeddedData = 1;
+}
+
+message VTMap {
+  map<string, double> BuiltMap = 1;
+}
+
+message VTBenchmark {
+  string Message = 1;
+  VTEmbeddedMessage Embedded = 2;
+  VTMap EmbeddedMap = 3;
+  VTEnumMessage EnumMessage = 4;
+  repeated VTEmbeddedMessage Repeated = 5;
+}
